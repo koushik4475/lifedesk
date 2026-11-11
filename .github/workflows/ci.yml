@@ -37,7 +37,7 @@ jobs:
         run: |
           sed -i "s/console:'readonly'/console:'readonly',setTimeout:'readonly'/" eslint.config.js
           sed -i "s/db.transaction('rw',db.tasks,db.events,db.habits,db.habitEntries,db.notes,db.transactions,db.records,db.settings,async()=>/db.transaction('rw',[db.tasks,db.events,db.habits,db.habitEntries,db.notes,db.transactions,db.records,db.settings],async()=>/" src/lib/backup.ts
-          grep -q "db.transaction('rw',[db.tasks" src/lib/backup.ts
+          grep -Fq "db.transaction('rw',[db.tasks" src/lib/backup.ts
 
       - name: Lint
         run: npm run lint
