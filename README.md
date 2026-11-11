@@ -42,9 +42,9 @@ npm run e2e
 - Tailwind CSS v4 build integration plus project-owned component styles and design tokens.
 - Dexie.js / IndexedDB for structured local persistence. Database schema is versioned.
 - Zod validates backup envelope and version before import.
-- date-fns handles calendar/date operations; dates representing calendar days are stored as local YYYY-MM-DD values.
+- date-fns handles calendar/date operations; dates representing calendar days are stored as local `YYYY-MM-DD` values.
 - Vitest + Testing Library for unit/component tests; Playwright for browser smoke tests.
-- vite-plugin-pwa generates the service worker and application manifest.
+- `vite-plugin-pwa` generates the service worker and application manifest.
 
 ## Privacy and data
 
@@ -52,16 +52,17 @@ LifeDesk V1 has no login, cloud account, cross-device sync, analytics, ads, paid
 
 ## Free deployment — Cloudflare Pages
 
-1. In Cloudflare Dashboard, open **Workers & Pages → Create → Pages → Connect to Git**.
-2. Select this repository and set production branch `main`.
-3. Build command: `npm run build`; output directory: `dist`.
-4. No environment variables are required. Deploy and verify the `*.pages.dev` URL, refreshed deep links, installability and offline reload after the first load.
+1. Create a **public** GitHub repository named `lifedesk` under your account and push the `main` branch.
+2. In Cloudflare Dashboard, open **Workers & Pages → Create → Pages → Connect to Git**.
+3. Select the repository and set production branch `main`.
+4. Build command: `npm run build`; output directory: `dist`.
+5. No environment variables are required. Deploy and verify the `*.pages.dev` URL, a refreshed deep link, installability and offline reload after the first load.
 
 `public/_redirects` provides the SPA fallback. Custom domains are optional and may cost money.
 
 ## Repository status
 
-LifeDesk V1 implementation is in progress. CI is configured to run lint, type-checking, unit tests, production build, and Playwright smoke tests on pushes and pull requests. A successful GitHub Actions run and a verified Pages URL are required before calling this a production release.
+Initial implementation scaffold. Run all quality checks and complete the deployment verification before describing a release as production-ready. See `CHANGELOG.md` for the current scope.
 
 ## License
 
