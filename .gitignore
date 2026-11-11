@@ -1,1 +1,12 @@
-<!-- LifeDesk source file staged; full content upload follows -->
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+*.json.backup

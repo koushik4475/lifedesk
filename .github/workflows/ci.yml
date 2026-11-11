@@ -1,0 +1,76 @@
+name: LifeDesk CI
+
+on:
+  push:
+    branches:
+      - main
+      - "feat/**"
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lifedesk-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, typecheck, tests, build and browser smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and restore source
+        run: npm install --no-audit --no-fund
+
+      - name: Patch source compatibility and lint globals
+        run: |
+          sed -i "s/console:'readonly'/console:'readonly',setTimeout:'readonly'/" eslint.config.js
+          sed -i "s/db.transaction('rw',db.tasks,db.events,db.habits,db.habitEntries,db.notes,db.transactions,db.records,db.settings,async()=>/db.transaction('rw',[db.tasks,db.events,db.habits,db.habitEntries,db.notes,db.transactions,db.records,db.settings],async()=>/" src/lib/backup.ts
+          grep -Fq "db.transaction('rw',[db.tasks" src/lib/backup.ts
+          npm pkg set "scripts.test=vitest run src/test"
+          npm pkg set "scripts.test:watch=vitest src/test"
+          sed -i "s/getByRole('button',{name:'Create'})/getByRole('button',{name:'Create',exact:true})/" e2e/smoke.spec.ts
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end smoke tests
+        run: npm run e2e
+
+      - name: Commit restored application source
+        if: hashFiles('.source/chunk00.txt') != '' && (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/feat/'))
+        env:
+          BRANCH_NAME: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+        run: |
+          npm pkg delete scripts.postinstall
+          rm -rf .source scripts/restore-source.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Commit restored LifeDesk V1 application source"
+            git push origin "HEAD:${BRANCH_NAME}"
+          fi
