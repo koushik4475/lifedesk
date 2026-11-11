@@ -52,9 +52,9 @@ jobs:
         run: npm run e2e
 
       - name: Commit restored application source
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/feat/') && hashFiles('.source/chunk00.txt') != ''
+        if: hashFiles('.source/chunk00.txt') != '' && (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/feat/'))
         env:
-          BRANCH_NAME: ${{ github.ref_name }}
+          BRANCH_NAME: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
         run: |
           npm pkg delete scripts.postinstall
           rm -rf .source scripts/restore-source.mjs
