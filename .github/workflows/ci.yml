@@ -33,10 +33,11 @@ jobs:
       - name: Install dependencies and restore source
         run: npm install --no-audit --no-fund
 
+      - name: Add browser timeout to ESLint globals
+        run: sed -i "s/console:'readonly'/console:'readonly',setTimeout:'readonly'/" eslint.config.js
+
       - name: Lint
-        run: |
-          node --input-type=module -e "import fs from 'node:fs'; const file='eslint.config.js'; const source=fs.readFileSync(file,'utf8'); if (!source.includes(\\"setTimeout:'readonly'\\")) fs.writeFileSync(file, source.replace(\\"console:'readonly'\\", \\"console:'readonly',setTimeout:'readonly'\\"));"
-          npm run lint
+        run: npm run lint
 
       - name: Type check
         run: npm run typecheck
