@@ -40,6 +40,7 @@ jobs:
           grep -Fq "db.transaction('rw',[db.tasks" src/lib/backup.ts
           npm pkg set "scripts.test=vitest run src/test"
           npm pkg set "scripts.test:watch=vitest src/test"
+          sed -i "s/getByRole('button',{name:'Create'})/getByRole('button',{name:'Create',exact:true})/" e2e/smoke.spec.ts
 
       - name: Lint
         run: npm run lint
