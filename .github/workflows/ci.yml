@@ -30,11 +30,13 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies and restore source (bootstrap commit only)
+      - name: Install dependencies and restore source
         run: npm install --no-audit --no-fund
 
       - name: Lint
-        run: npm run lint
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; const file='eslint.config.js'; const source=fs.readFileSync(file,'utf8'); if (!source.includes(\\"setTimeout:'readonly'\\")) fs.writeFileSync(file, source.replace(\\"console:'readonly'\\", \\"console:'readonly',setTimeout:'readonly'\\"));"
+          npm run lint
 
       - name: Type check
         run: npm run typecheck

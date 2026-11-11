@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,7 +42,6 @@ while (offset + 512 <= archive.length) {
   if (type === '5' || relativePath.endsWith('/')) {
     mkdirSync(destination, { recursive: true });
   } else if (type === '0') {
-    // Preserve this bootstrap workflow until it has completed the verified source commit.
     if (relativePath !== '.github/workflows/ci.yml') {
       mkdirSync(dirname(destination), { recursive: true });
       writeFileSync(destination, archive.subarray(offset + 512, offset + 512 + size));
