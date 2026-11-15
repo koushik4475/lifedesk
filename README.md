@@ -1,4 +1,7 @@
-# LifeDesk
+# LifeDesk | Offline-First Personal Dashboard for Tasks, Habits, Notes and Budget Tracking
+
+LifeDesk is an offline-first personal command centre for organizing tasks, routines, habits, notes, calendar events, everyday income and expenses, and important renewal dates. Built with a local-first web stack, it is designed to keep personal planning data in the browser without requiring an account or subscription. It includes JSON backup and restore; it does not provide bank connectivity, payment initiation, or guaranteed background notifications.
+
 
 A calm, offline-first personal command centre for tasks, routines, notes, planning, everyday money and important dates.
 
