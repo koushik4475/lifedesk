@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: lifedesk-ci-${{ github.ref }}
@@ -59,18 +59,3 @@ jobs:
 
       - name: End-to-end smoke tests
         run: npm run e2e
-
-      - name: Commit restored application source
-        if: hashFiles('.source/chunk00.txt') != '' && (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/feat/'))
-        env:
-          BRANCH_NAME: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-        run: |
-          npm pkg delete scripts.postinstall
-          rm -rf .source scripts/restore-source.mjs
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if ! git diff --cached --quiet; then
-            git commit -m "Commit restored LifeDesk V1 application source"
-            git push origin "HEAD:${BRANCH_NAME}"
-          fi
