@@ -92,7 +92,14 @@ describe('backup validation', () => {
     expect(() => validateBackup(backup('2026-11-22'))).not.toThrow();
   });
 
-  it('rejects habit entry dates that are not YYYY-MM-DD', () => {
+  it('rejects malformed and impossible habit entry calendar dates', () => {
     expect(() => validateBackup(backup('not-a-date'))).toThrow();
+    expect(() => validateBackup(backup('2026-02-30'))).toThrow();
+    expect(() => validateBackup(backup('2026-13-01'))).toThrow();
+  });
+
+  it('accepts leap-day dates only in leap years', () => {
+    expect(() => validateBackup(backup('2024-02-29'))).not.toThrow();
+    expect(() => validateBackup(backup('2025-02-29'))).toThrow();
   });
 });
