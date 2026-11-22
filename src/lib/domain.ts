@@ -36,3 +36,19 @@ export function monthCategoryTotals(rows: { type: string; category: string; amou
 export function resolveTransactionCurrency(existingCurrency: string | undefined, preferredCurrency: string): string {
   return existingCurrency || preferredCurrency;
 }
+
+
+/** Return only the first occurrence of records whose keys are not already stored locally. */
+export function recordsMissingLocally<T>(
+  records: T[],
+  existingKeys: Set<string>,
+  getKey: (record: T) => string,
+): T[] {
+  const seen = new Set(existingKeys);
+  return records.filter((record) => {
+    const key = getKey(record);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
