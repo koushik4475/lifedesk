@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { monthCategoryTotals, nextOccurrence, resolveTransactionCurrency, toMinorUnits } from '../lib/domain';
+import { monthCategoryTotals, nextOccurrence, recordsMissingLocally, resolveTransactionCurrency, toMinorUnits } from '../lib/domain';
 
 describe('date and money domain logic', () => {
   it('advances daily and weekly recurrences over month boundaries', () => {
@@ -48,5 +48,29 @@ describe('transaction currency', () => {
 
   it('uses the current currency preference for a new transaction', () => {
     expect(resolveTransactionCurrency(undefined, 'INR')).toBe('INR');
+  });
+});
+
+
+describe('backup merge selection', () => {
+  it('keeps existing local records and imports only new unique keys', () => {
+    const incoming = [
+      { id: 'existing', title: 'Backup version' },
+      { id: 'new', title: 'First copy' },
+      { id: 'new', title: 'Duplicate copy' },
+      { id: 'another', title: 'Another new record' },
+    ];
+
+    expect(recordsMissingLocally(incoming, new Set(['existing']), (record) => record.id)).toEqual([
+      { id: 'new', title: 'First copy' },
+      { id: 'another', title: 'Another new record' },
+    ]);
+  });
+
+  it('supports non-id primary keys such as settings keys', () => {
+    const incoming = [{ key: 'theme', value: 'dark' }, { key: 'currency', value: 'INR' }];
+    expect(recordsMissingLocally(incoming, new Set(['theme']), (record) => record.key)).toEqual([
+      { key: 'currency', value: 'INR' },
+    ]);
   });
 });
