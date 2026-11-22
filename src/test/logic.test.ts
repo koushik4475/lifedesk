@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { validateBackup } from '../lib/backup';
 import { monthCategoryTotals, nextOccurrence, recordsMissingLocally, resolveTransactionCurrency, toMinorUnits } from '../lib/domain';
 
 describe('date and money domain logic', () => {
@@ -72,5 +73,26 @@ describe('backup merge selection', () => {
     expect(recordsMissingLocally(incoming, new Set(['theme']), (record) => record.key)).toEqual([
       { key: 'currency', value: 'INR' },
     ]);
+  });
+});
+
+
+describe('backup validation', () => {
+  const backup = (localDate: string) => ({
+    version: 1,
+    exportedAt: '2026-11-22T00:00:00.000Z',
+    data: {
+      tasks: [], events: [], habits: [],
+      habitEntries: [{ id: '00000000-0000-4000-8000-000000000001', habitId: '00000000-0000-4000-8000-000000000002', localDate, completedAt: '2026-11-22T00:00:00.000Z' }],
+      notes: [], transactions: [], records: [], settings: [],
+    },
+  });
+
+  it('accepts ISO calendar dates in habit entries', () => {
+    expect(() => validateBackup(backup('2026-11-22'))).not.toThrow();
+  });
+
+  it('rejects habit entry dates that are not YYYY-MM-DD', () => {
+    expect(() => validateBackup(backup('not-a-date'))).toThrow();
   });
 });
