@@ -33,7 +33,7 @@ export async function importBackup(input:unknown,mode:'merge'|'replace'){
    if(!incoming.length)continue;
    const uniqueKeys=[...new Set(incoming.map((row)=>String(row[key])))];
    const existing=mode==='merge'?await table.bulkGet(uniqueKeys):[];
-   const existingKeys=new Set(existing.filter(Boolean).map((row:any)=>String(row[key])));
+   const existingKeys = new Set<string>(existing.filter(Boolean).map((row:any) => String(row[key])));
    const additions=recordsMissingLocally(incoming,existingKeys,(row)=>String(row[key]));
    if(additions.length)await table.bulkAdd(additions);
   }
