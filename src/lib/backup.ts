@@ -13,7 +13,7 @@ const record=z.object({id,name:z.string().min(1),kind:z.string(),dueOn:z.string(
 const setting=z.object({key:z.string().min(1),value:z.unknown()}).passthrough();
 const schema=z.object({version:z.literal(1),exportedAt:z.string().datetime(),data:z.object({tasks:z.array(task),events:z.array(event),habits:z.array(habit),habitEntries:z.array(entry),notes:z.array(note),transactions:z.array(transaction),records:z.array(record),settings:z.array(setting)})});
 export function validateBackup(input: unknown) { return schema.parse(input); }
-const tables=[','events','habits','habitEntries','notes','transactions','records','settings'] as const;
+const tables=['tasks','events','habits','habitEntries','notes','transactions','records','settings'] as const;
 const primaryKey=(table:typeof tables[number])=>table==='settings'?'key':'id';
 export async function exportBackup(){const data:any={};for(const t of tables)data[t]=await (db[t] as any).toArray();return {version:1 as const,exportedAt:new Date().toISOString(),data};}
 export async function importBackup(input:unknown,mode:'merge'|'replace'){
