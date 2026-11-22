@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { monthCategoryTotals, nextOccurrence, toMinorUnits } from '../lib/domain';
+import { monthCategoryTotals, nextOccurrence, resolveTransactionCurrency, toMinorUnits } from '../lib/domain';
 
 describe('date and money domain logic', () => {
   it('advances daily and weekly recurrences over month boundaries', () => {
@@ -38,5 +38,15 @@ describe('date and money domain logic', () => {
       { type: 'expense', category: 'Food', amountMinor: 50 },
       { type: 'income', category: 'Food', amountMinor: 900 },
     ])).toEqual({ Food: 150 });
+  });
+});
+
+describe('transaction currency', () => {
+  it('preserves the original currency when editing an existing transaction', () => {
+    expect(resolveTransactionCurrency('USD', 'INR')).toBe('USD');
+  });
+
+  it('uses the current currency preference for a new transaction', () => {
+    expect(resolveTransactionCurrency(undefined, 'INR')).toBe('INR');
   });
 });

@@ -31,3 +31,8 @@ export function monthCategoryTotals(rows: { type: string; category: string; amou
       return totals;
     }, {});
 }
+
+/** Keep an existing transaction's currency when editing it; use the current preference for new entries. */
+export function resolveTransactionCurrency(existingCurrency: string | undefined, preferredCurrency: string): string {
+  return existingCurrency || preferredCurrency;
+}
